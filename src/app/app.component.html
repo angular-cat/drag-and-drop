@@ -1,0 +1,74 @@
+<div class="container py-2">
+    <div class="text-center text-md-start pt-1 pb-3">
+        <a href="/">
+            <img class="logo" src="assets/logo/angular-cat-logo.svg" alt="AngularCat Logo" title="AngularCat Logo">
+        </a>
+    </div>
+    <div class="row align-items-md-stretch g-3">
+        <div class="col-md-6">
+            <mat-card class="mat-elevation-z6">
+                <mat-card-header>
+                    <mat-card-title>Drag&Drop Category</mat-card-title>
+                    <mat-card-subtitle>Add, move or remove a category</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <form [formGroup]="categoryForm">
+                        <mat-form-field class="full-width" appearance="fill">
+                            <mat-label>Category name:</mat-label>
+                            <input class="lowercase" matInput formControlName="categoryName" name="categoryName"
+                                   type="text"
+                                   placeholder="Category name" #name>
+                            <mat-hint align="end">
+                                {{name.value.length}} / 15
+                            </mat-hint>
+                            <mat-error *ngIf="categoryName.errors?.['required']">
+                                Please enter a category name.
+                            </mat-error>
+                            <mat-error *ngIf="name.value.length < 3">
+                                A minimum length of category name is 3 characters.
+                            </mat-error>
+                            <mat-error *ngIf="name.value.length > 15">
+                                A maximum length of category name is 15 characters.
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-card-actions>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary" (click)="addCategory()"
+                                        matTooltip="Add category to lists" matTooltipPosition="below"
+                                        [disabled]="categoryForm.invalid">
+                                    <i class="fa-solid fa-circle-plus"></i> Add
+                                </button>
+                            </div>
+                        </mat-card-actions>
+                    </form>
+                    <mat-list role="list">
+                        <mat-list-item role="listitem">
+                            <mat-slide-toggle [(ngModel)]="refresh" color="primary">Best Refresh:
+                                {{refresh ? "Yes" : "No"}}</mat-slide-toggle>
+                        </mat-list-item>
+                        <mat-list-item role="listitem">
+                            <mat-slide-toggle [(ngModel)]="firebase" color="primary">Firebase Preview:
+                                {{firebase ? "Yes" : "No"}}</mat-slide-toggle>
+                        </mat-list-item>
+                    </mat-list>
+                    <div *ngIf="categories$.length > 0 " class="py-2">
+                        <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+                            <div class="example-box" *ngFor="let category of categories$"
+                                 [cdkDragData]="category" cdkDrag>
+                                <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                                {{category.categoryID + 1 }}: {{category.categoryName}}
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                        (click)="deleteCategory(category.key)"><i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <mat-progress-bar mode="indeterminate" *ngIf="isLoading" color="accent"></mat-progress-bar>
+        </div>
+        <div *ngIf="firebase" class="col-md-6">
+            <pre>{{categories$ | json }}</pre>
+        </div>
+    </div>
+</div>
